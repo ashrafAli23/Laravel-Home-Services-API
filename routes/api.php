@@ -88,6 +88,11 @@ Route::prefix('admin')->group(function () {
         });
 
         /**
+         * Admin profile
+         */
+        Route::get("/profile", [UserController::class, 'profile']);
+        Route::post("/profile/update", [UserController::class, 'updateProfile']);
+        /**
          * Admin Logout
          */
         Route::get('logout', [AuthController::class, 'logout']);
