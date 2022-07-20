@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone')->unique()->index("phone");
             $table->string('email')->unique()->index("email");
+            $table->enum('type', ['user', 'provider', 'admin'])->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('image')->nullable();
             $table->string('password');
+            $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -9,6 +9,15 @@ class ServiceProvider extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'city',
+        'about',
+        'service_locations',
+        'service_category_id',
+
+    ];
+
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
@@ -18,4 +27,8 @@ class ServiceProvider extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    protected $casts = [
+        'email_verified_at' => 'datetime', 'type'
+    ];
 }
