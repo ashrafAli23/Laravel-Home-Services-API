@@ -11,71 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    /**
-     * User Register
-     */
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|min:8',
-            'phone' => 'required|min:11',
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if ($user) {
-            return response([
-                'message' => ['This user already exists.']
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $inserUserData = User::create([
-            "name" => $request->name,
-            "phone" => $request->phone,
-            "email" => $request->email,
-            "password" => Hash::make($request->password)
-        ]);
-
-        if ($request->type === 'service_provider') {
-            ServiceProvider::create([
-                'user_id' => $inserUserData->id
-            ]);
-        }
-
-        $token = $inserUserData->createToken($request->email)->plainTextToken;
-        return response([
-            'user' => $inserUserData,
-            "token" => $token
-        ], Response::HTTP_CREATED);
-    }
-
-    /**
-     * User login
-     */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([
-                'message' => ['Invalid Email or password.']
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        $token = $user->createToken($user->email)->plainTextToken;
-
-        return response([
-            'user' => $user,
-            'token' => $token
-        ], Response::HTTP_CREATED);
-    }
 
     /**
      * User profile
@@ -104,14 +40,5 @@ class UserController extends Controller
         ]);
 
         return response(["message" =>  "User updated success"], Response::HTTP_CREATED);
-    }
-
-
-    /**
-     * USer logout
-     */
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
     }
 }
