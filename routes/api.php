@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServiceProviderController;
 use App\Http\Controllers\ServicesCategoryController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,11 +23,10 @@ use Illuminate\Support\Facades\Route;
  * User Routes
  */
 Route::prefix('user')->group(function () {
-    Route::post('register', [UserController::class, 'register']);
-    Route::post('login', [UserController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
-
         // User profile
         Route::get("/profile", [UserController::class, 'profile']);
         Route::post("/profile/update", [UserController::class, 'updateProfile']);
@@ -36,7 +34,7 @@ Route::prefix('user')->group(function () {
         /**
          * User Logout Route
          */
-        Route::get('logout', [UserController::class, 'logout']);
+        Route::get('logout', [AuthController::class, 'logout']);
     });
 });
 //  =======================================
@@ -46,9 +44,15 @@ Route::prefix('user')->group(function () {
  */
 
 Route::prefix('service-provider')->group(function () {
-    Route::middleware(['auth:sanctum', 'serivce_provider'])->group(function () {
-        Route::get("/profile", [ServiceProviderController::class, 'profile']);
-        Route::post("/profile/update", [ServiceProviderController::class, 'updateProfile']);
+    // get service provider profile for user
+    Route::get('/details', [ServiceProviderController::class, 'getProfileDetailes']);
+
+    Route::middleware(['auth:sanctum', 'service_provider'])->group(function () {
+        // create services
+        Route::post('/create-service', [ServiceProviderController::class, 'createService']);
+
+        Route::get("/profile", [UserController::class, 'profile']);
+        Route::post("/profile/update", [UserController::class, 'updateProfile']);
     });
 });
 
@@ -58,8 +62,8 @@ Route::prefix('service-provider')->group(function () {
  * Admin Routes
  */
 Route::prefix('admin')->group(function () {
-    Route::post('register', [AdminController::class, 'register']);
-    Route::post('login', [AdminController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
 
     Route::middleware(['auth:sanctum', 'admin'])->group(function () {
         /**
@@ -86,7 +90,7 @@ Route::prefix('admin')->group(function () {
         /**
          * Admin Logout
          */
-        Route::get('logout', [AdminController::class, 'logout']);
+        Route::get('logout', [AuthController::class, 'logout']);
     });
 });
 //  =======================================
