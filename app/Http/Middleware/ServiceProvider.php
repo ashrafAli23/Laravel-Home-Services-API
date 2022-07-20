@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServiceProvider
@@ -17,7 +18,7 @@ class ServiceProvider
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user()->type === 'service_provider') {
+        if (Auth::user()->type === 'provider') {
 
             return $next($request);
         }
