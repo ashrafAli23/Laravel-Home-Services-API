@@ -9,28 +9,29 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ServiceProviderController extends Controller
 {
-
-    public function profile(Request $request)
-    {
-        $provider = ServiceProvider::where('user_id', Auth::user()->id)->first();
-        return response(["user" => ['provider' => $provider, 'data' => Auth::user()]], Response::HTTP_CREATED);
-    }
-
-    public function updateProfile(Request $request)
+    public function createService(Request $request)
     {
         $request->validate([
-            'city' => 'required',
-            'about' =>  'required|min:8',
-            'service_category_id' => 'required',
+            'city' => 'required|min:3',
+            'about' => 'required|min:10',
             'service_locations' => 'required',
+            'service_category_id' => 'required|numeric'
         ]);
 
-        $provider = ServiceProvider::where('user_id', Auth::user()->id)->update([
+        ServiceProvider::create([
+            'user_id' => Auth::user()->id,
             'city' => $request->city,
             'about' => $request->about,
-            'service_category_id' => $request->service_category_id,
             'service_locations' => $request->service_locations,
+            'service_category_id' => $request->service_category_id
         ]);
-        return response(["message" => "Success Update"], Response::HTTP_CREATED);
+
+        return response(["message" => "Success"], Response::HTTP_CREATED);
+    }
+
+    public function getProfileDetailes()
+    {
+        $provider = ServiceProvider::with(['user', 'category'])->first();
+        return response(["provider" => $provider], Response::HTTP_OK);
     }
 }
